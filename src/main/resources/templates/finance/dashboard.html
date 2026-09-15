@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance Officer Workspace - Swift Go Lanka</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark glass-nav sticky-top py-2 px-3">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold d-flex align-items-center" href="#">
+                <i class="bi bi-wallet2 text-info fs-3 me-2"></i> Financial Console - Swift Go Lanka
+            </a>
+            <div class="d-flex align-items-center gap-3">
+                <a th:href="@{/profile}" class="btn btn-sm btn-secondary-swift"><i class="bi bi-person-gear me-1"></i> Profile</a>
+                <a th:href="@{/logout}" class="btn btn-sm btn-outline-danger"><i class="bi bi-box-arrow-right"></i> Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid my-4 px-md-4">
+        <!-- Flash Alerts -->
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${errorMessage}">Error</span>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> <span th:text="${successMessage}">Success</span>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Metric Stat Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="glass-card p-3 d-flex align-items-center gap-3">
+                    <div class="bg-success bg-opacity-25 p-3 rounded-circle text-success fs-3"><i class="bi bi-cash-stack"></i></div>
+                    <div>
+                        <small class="text-muted d-block">Gross System Revenue</small>
+                        <h3 class="fw-bold text-success mb-0" th:text="'Rs. ' + ${#numbers.formatDecimal(totalRevenue, 1, 2)}">Rs. 0.00</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="glass-card p-3 d-flex align-items-center gap-3">
+                    <div class="bg-primary bg-opacity-25 p-3 rounded-circle text-primary fs-3"><i class="bi bi-piggy-bank"></i></div>
+                    <div>
+                        <small class="text-muted d-block">Net Platform Fees (15%)</small>
+                        <h3 class="fw-bold text-primary mb-0" th:text="'Rs. ' + ${#numbers.formatDecimal(platformFees, 1, 2)}">Rs. 0.00</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="glass-card p-3 d-flex align-items-center gap-3">
+                    <div class="bg-warning bg-opacity-25 p-3 rounded-circle text-warning fs-3"><i class="bi bi-arrow-counterclockwise"></i></div>
+                    <div>
+                        <small class="text-muted d-block">Pending Refund Requests</small>
+                        <h3 class="fw-bold text-warning mb-0" th:text="${refunds.size()}">0</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Left: Refund Approvals -->
+            <div class="col-lg-6">
+                <div class="glass-card p-4 mb-4">
+                    <h4 class="fw-bold text-warning mb-3"><i class="bi bi-shield-exclamation me-2"></i>Refund Claims Queue</h4>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Passenger</th>
+                                    <th>Txn Ref</th>
+                                    <th>Amount</th>
+                                    <th>Reason</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="r : ${refunds}">
+                                    <td th:text="${r.passenger.fullName}">Passenger</td>
+                                    <td class="font-monospace text-info small" th:text="${r.payment.transactionReference}">TXN-1234</td>
+                                    <td class="text-warning font-monospace" th:text="'Rs. ' + ${r.amount}">Rs. 500</td>
+                                    <td class="small text-muted" th:text="${r.reason}">Reason</td>
+                                    <td>
+                                        <span class="badge" 
+                                              th:classappend="${r.refundStatus.name() == 'PROCESSED'} ? 'bg-success' : 'bg-warning text-dark'"
+                                              th:text="${r.refundStatus}">PENDING</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-1" th:if="${r.refundStatus.name() == 'PENDING'}">
+                                            <form th:action="@{/finance/refunds/process}" method="post">
+                                                <input type="hidden" name="refundId" th:value="${r.id}">
+                                                <input type="hidden" name="approve" value="true">
+                                                <button type="submit" class="btn btn-xs btn-success"><i class="bi bi-check-lg"></i> Approve</button>
+                                            </form>
+                                            <form th:action="@{/finance/refunds/process}" method="post">
+                                                <input type="hidden" name="refundId" th:value="${r.id}">
+                                                <input type="hidden" name="approve" value="false">
+                                                <button type="submit" class="btn btn-xs btn-danger"><i class="bi bi-x-lg"></i> Decline</button>
+                                            </form>
+                                        </div>
+                                        <span th:if="${r.refundStatus.name() != 'PENDING'}" class="text-muted small"><i class="bi bi-check2"></i> Processed</span>
+                                    </td>
+                                </tr>
+                                <tr th:if="${refunds == null or refunds.isEmpty()}">
+                                    <td colspan="6" class="text-center text-muted py-4">No pending refund requests.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Payment Transactions Ledger -->
+            <div class="col-lg-6">
+                <div class="glass-card p-4 mb-4">
+                    <h4 class="fw-bold text-success mb-3"><i class="bi bi-journal-check me-2"></i>Full Payment Ledger</h4>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Txn Ref</th>
+                                    <th>Passenger</th>
+                                    <th>Amount</th>
+                                    <th>Method</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="p : ${payments}">
+                                    <td class="font-monospace text-info" th:text="${p.transactionReference}">TXN-1234</td>
+                                    <td th:text="${p.passenger.fullName}">Passenger</td>
+                                    <td class="text-success font-monospace" th:text="'Rs. ' + ${p.amount}">Rs. 500</td>
+                                    <td th:text="${p.paymentMethod}">CREDIT_CARD</td>
+                                    <td><span class="badge bg-success" th:text="${p.paymentStatus}">PAID</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="glass-card p-4">
+                    <h5 class="fw-bold text-info mb-3"><i class="bi bi-file-earmark-bar-graph me-2"></i>Generate Financial Report</h5>
+                    <form th:action="@{/finance/reports/generate}" method="post">
+                        <div class="mb-2">
+                            <label class="form-label text-light small mb-1">Report Title</label>
+                            <input type="text" name="title" class="form-control form-control-sm" value="Monthly Revenue & Commission Ledger" required>
+                        </div>
+                        <button type="submit" class="btn btn-sm btn-primary-swift w-100 mt-2">Generate Financial Report</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>
