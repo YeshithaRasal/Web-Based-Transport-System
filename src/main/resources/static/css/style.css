@@ -1,0 +1,738 @@
+/* ======================================================
+   Swift Go Lanka - Modern Enterprise Transport Design System
+   High-Quality Dark Theme: Deep Navy, Dark Slate & Cyan/Teal Accent
+   ====================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    /* Brand & Accent */
+    --primary-cyan: #06b6d4;
+    --primary-cyan-hover: #0891b2;
+    --primary-teal: #14b8a6;
+    --accent-sky: #0ea5e9;
+    --accent-indigo: #6366f1;
+    --brand-gradient: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+    --brand-gradient-hover: linear-gradient(135deg, #0284c7 0%, #0891b2 100%);
+    
+    /* Backgrounds - Sophisticated Dark Canvas */
+    --bg-page: #0b1120;
+    --bg-card: #131c31;
+    --bg-card-hover: #17233c;
+    --bg-surface: #0e1627;
+    --bg-nav: #080d19;
+    --bg-input: #0a101d;
+    
+    /* Typography */
+    --text-heading: #f8fafc;
+    --text-body: #cbd5e1;
+    --text-muted: #94a3b8;
+    --text-light-sub: #64748b;
+    
+    /* Borders & Accents */
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --border-card: #1e2c46;
+    --border-input: #243553;
+    --border-focus: #06b6d4;
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 10px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 10px 25px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
+    --shadow-xl: 0 20px 35px -5px rgba(0, 0, 0, 0.6), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+    --glow-cyan: 0 0 15px rgba(6, 182, 212, 0.3);
+    
+    /* Status Palette (Dark Mode Optimized) */
+    --gold: #f59e0b;
+    --gold-bg: rgba(245, 158, 11, 0.12);
+    --gold-border: rgba(245, 158, 11, 0.3);
+    
+    --emerald: #10b981;
+    --emerald-bg: rgba(16, 185, 129, 0.12);
+    --emerald-border: rgba(16, 185, 129, 0.3);
+    
+    --rose: #ef4444;
+    --rose-bg: rgba(239, 68, 68, 0.12);
+    --rose-border: rgba(239, 68, 68, 0.3);
+    
+    --cyan-bg: rgba(6, 182, 212, 0.12);
+    --cyan-border: rgba(6, 182, 212, 0.3);
+}
+
+/* ======================================================
+   Base Typography & Page Layout
+   ====================================================== */
+html, body {
+    height: 100%;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg-page) !important;
+    background-image: radial-gradient(circle at 50% 0%, rgba(14, 165, 233, 0.05) 0%, transparent 60%) !important;
+    color: var(--text-body);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--text-heading) !important;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+}
+
+a {
+    color: var(--primary-cyan);
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+a:hover {
+    color: var(--primary-cyan-hover);
+}
+
+/* ======================================================
+   Dark Theme Cards & Containers
+   ====================================================== */
+.glass-card, .modern-card {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border-card) !important;
+    border-radius: 16px !important;
+    box-shadow: var(--shadow-md) !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    color: var(--text-body);
+}
+
+.glass-card:hover, .modern-card:hover {
+    box-shadow: var(--shadow-lg) !important;
+    border-color: rgba(6, 182, 212, 0.3) !important;
+}
+
+/* Force light / dark text adaptation inside cards */
+.text-dark {
+    color: var(--text-heading) !important;
+}
+
+.text-white, .text-light {
+    color: var(--text-heading) !important;
+}
+
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+/* Neutralize bootstrap bg-light to dark surface inside containers */
+.bg-light {
+    background-color: var(--bg-surface) !important;
+    border: 1px solid var(--border-card) !important;
+    color: var(--text-body) !important;
+}
+
+.border-secondary {
+    border-color: var(--border-card) !important;
+}
+
+hr {
+    border-color: var(--border-card) !important;
+    opacity: 0.6;
+}
+
+/* ======================================================
+   Navigation Bar (Deep Dark Navy)
+   ====================================================== */
+.glass-nav, .modern-nav {
+    background: var(--bg-nav) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border-bottom: 1px solid var(--border-card) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+}
+
+.navbar-brand {
+    color: var(--text-heading) !important;
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+.navbar-brand i {
+    color: var(--primary-cyan) !important;
+    filter: drop-shadow(0 0 6px rgba(6, 182, 212, 0.4));
+}
+
+/* Role Badges in Header */
+.role-badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 0.3rem 0.75rem;
+    border-radius: 9999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border: 1px solid transparent;
+}
+
+.role-badge-passenger {
+    background-color: var(--cyan-bg);
+    color: var(--primary-cyan);
+    border-color: var(--cyan-border);
+}
+
+.role-badge-driver {
+    background-color: var(--emerald-bg);
+    color: var(--emerald);
+    border-color: var(--emerald-border);
+}
+
+.role-badge-admin {
+    background-color: rgba(99, 102, 241, 0.15);
+    color: #818cf8;
+    border-color: rgba(99, 102, 241, 0.3);
+}
+
+/* ======================================================
+   Navigation Tabs (Segmented Control / Dark Pills)
+   ====================================================== */
+.nav-pills {
+    background: var(--bg-surface) !important;
+    border: 1px solid var(--border-card) !important;
+    border-radius: 14px !important;
+    padding: 0.4rem !important;
+    box-shadow: var(--shadow-sm);
+}
+
+.nav-pills .nav-link {
+    color: var(--text-muted) !important;
+    font-weight: 500;
+    padding: 0.6rem 1.15rem;
+    border-radius: 10px !important;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    background: transparent;
+}
+
+.nav-pills .nav-link:hover {
+    color: var(--text-heading) !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+}
+
+.nav-pills .nav-link.active {
+    color: #ffffff !important;
+    background: var(--brand-gradient) !important;
+    box-shadow: 0 4px 14px rgba(6, 182, 212, 0.35) !important;
+    font-weight: 600;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* ======================================================
+   Buttons & Interactive Elements
+   ====================================================== */
+.btn-primary-swift {
+    background: var(--brand-gradient) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #ffffff !important;
+    font-weight: 600;
+    padding: 0.6rem 1.4rem;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(6, 182, 212, 0.3);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.btn-primary-swift:hover {
+    background: var(--brand-gradient-hover) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(6, 182, 212, 0.45);
+    color: #ffffff !important;
+}
+
+.btn-secondary-swift {
+    background: var(--bg-surface) !important;
+    border: 1px solid var(--border-input) !important;
+    color: var(--text-heading) !important;
+    font-weight: 500;
+    border-radius: 10px;
+    padding: 0.5rem 1rem;
+    transition: all 0.2s ease;
+}
+
+.btn-secondary-swift:hover {
+    background: var(--bg-card-hover) !important;
+    border-color: var(--primary-cyan) !important;
+    color: #ffffff !important;
+    transform: translateY(-1px);
+}
+
+.btn-outline-primary {
+    border-color: var(--primary-cyan) !important;
+    color: var(--primary-cyan) !important;
+}
+
+.btn-outline-primary:hover {
+    background: var(--primary-cyan) !important;
+    color: #ffffff !important;
+    box-shadow: var(--glow-cyan);
+}
+
+.btn-outline-secondary {
+    border-color: var(--border-input) !important;
+    color: var(--text-body) !important;
+}
+
+.btn-outline-secondary:hover {
+    background: var(--bg-card-hover) !important;
+    color: var(--text-heading) !important;
+    border-color: var(--text-muted) !important;
+}
+
+.btn-outline-danger {
+    border-color: var(--rose) !important;
+    color: var(--rose) !important;
+}
+
+.btn-outline-danger:hover {
+    background: var(--rose) !important;
+    color: #ffffff !important;
+}
+
+.btn-outline-warning {
+    border-color: var(--gold) !important;
+    color: var(--gold) !important;
+}
+
+.btn-outline-warning:hover {
+    background: var(--gold) !important;
+    color: #0b1120 !important;
+    font-weight: 600;
+}
+
+.btn-outline-success {
+    border-color: var(--emerald) !important;
+    color: var(--emerald) !important;
+}
+
+.btn-outline-success:hover {
+    background: var(--emerald) !important;
+    color: #ffffff !important;
+}
+
+.btn-xs {
+    padding: 0.25rem 0.65rem;
+    font-size: 0.8125rem;
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+/* ======================================================
+   Stat Cards & Metrics
+   ====================================================== */
+.stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-card);
+    padding: 1.5rem;
+    border-radius: 16px;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s ease;
+}
+
+.stat-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+    border-color: var(--primary-cyan);
+}
+
+.stat-icon-wrapper {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+/* ======================================================
+   Form Controls & Inputs
+   ====================================================== */
+.form-label {
+    color: var(--text-heading) !important;
+    font-weight: 500;
+    font-size: 0.875rem;
+    margin-bottom: 0.4rem;
+}
+
+.form-control, .form-select {
+    background-color: var(--bg-input) !important;
+    border: 1px solid var(--border-input) !important;
+    color: var(--text-heading) !important;
+    border-radius: 10px !important;
+    padding: 0.65rem 0.95rem;
+    font-size: 0.9375rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: #0d1526 !important;
+    border-color: var(--primary-cyan) !important;
+    box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.2) !important;
+    color: #ffffff !important;
+    outline: none;
+}
+
+.form-control::placeholder {
+    color: var(--text-light-sub) !important;
+}
+
+.form-select option {
+    background-color: var(--bg-card);
+    color: var(--text-heading);
+}
+
+/* Input group */
+.input-group-text {
+    background-color: var(--bg-surface) !important;
+    border: 1px solid var(--border-input) !important;
+    color: var(--text-muted) !important;
+}
+
+/* ======================================================
+   Tables (Professional Dark Fleet Tables)
+   ====================================================== */
+.table-responsive {
+    border-radius: 12px;
+    border: 1px solid var(--border-card);
+    background: var(--bg-card);
+    box-shadow: var(--shadow-sm);
+}
+
+.table {
+    margin-bottom: 0;
+    color: var(--text-body) !important;
+    background-color: transparent !important;
+}
+
+/* Override table-dark seamlessly */
+.table-dark {
+    --bs-table-bg: transparent !important;
+    --bs-table-striped-bg: rgba(255, 255, 255, 0.02) !important;
+    --bs-table-hover-bg: var(--bg-card-hover) !important;
+    --bs-table-color: var(--text-body) !important;
+    --bs-table-border-color: var(--border-subtle) !important;
+    color: var(--text-body) !important;
+}
+
+.table thead th, .table-light th {
+    background-color: var(--bg-surface) !important;
+    color: var(--text-muted) !important;
+    font-weight: 600;
+    font-size: 0.775rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--border-card) !important;
+    white-space: nowrap;
+}
+
+.table tbody td {
+    padding: 0.9rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 0.875rem;
+    vertical-align: middle;
+    color: var(--text-body);
+}
+
+.table tbody tr:hover td {
+    background-color: var(--bg-card-hover) !important;
+    color: var(--text-heading) !important;
+}
+
+/* ======================================================
+   Status Badges (Dark Mode Soft Tinted with Rich Contrast)
+   ====================================================== */
+.badge {
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    padding: 0.35rem 0.65rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+}
+
+.badge-requested { background-color: rgba(59, 130, 246, 0.15) !important; color: #60a5fa !important; border: 1px solid rgba(59, 130, 246, 0.3); }
+.badge-searching { background-color: rgba(168, 85, 247, 0.15) !important; color: #c084fc !important; border: 1px solid rgba(168, 85, 247, 0.3); }
+.badge-assigned { background-color: var(--cyan-bg) !important; color: var(--primary-cyan) !important; border: 1px solid var(--cyan-border); }
+.badge-arriving { background-color: var(--gold-bg) !important; color: #fbbf24 !important; border: 1px solid var(--gold-border); }
+.badge-arrived { background-color: rgba(249, 115, 22, 0.15) !important; color: #fb923c !important; border: 1px solid rgba(249, 115, 22, 0.3); }
+.badge-pickedup { background-color: rgba(236, 72, 153, 0.15) !important; color: #f472b6 !important; border: 1px solid rgba(236, 72, 153, 0.3); }
+.badge-inprogress { background-color: rgba(99, 102, 241, 0.18) !important; color: #818cf8 !important; border: 1px solid rgba(99, 102, 241, 0.35); }
+.badge-completed { background-color: var(--emerald-bg) !important; color: var(--emerald) !important; border: 1px solid var(--emerald-border); }
+.badge-cancelled { background-color: var(--rose-bg) !important; color: var(--rose) !important; border: 1px solid var(--rose-border); }
+
+/* Bootstrap badge color modernizations for dark theme */
+.bg-success { background-color: var(--emerald-bg) !important; color: var(--emerald) !important; border: 1px solid var(--emerald-border); }
+.bg-warning { background-color: var(--gold-bg) !important; color: #fbbf24 !important; border: 1px solid var(--gold-border); }
+.bg-danger { background-color: var(--rose-bg) !important; color: var(--rose) !important; border: 1px solid var(--rose-border); }
+.bg-info { background-color: var(--cyan-bg) !important; color: var(--primary-cyan) !important; border: 1px solid var(--cyan-border); }
+.bg-secondary { background-color: rgba(148, 163, 184, 0.12) !important; color: #94a3b8 !important; border: 1px solid rgba(148, 163, 184, 0.25); }
+.bg-primary { background-color: rgba(14, 165, 233, 0.15) !important; color: #38bdf8 !important; border: 1px solid rgba(14, 165, 233, 0.3); }
+
+/* Subtle sub-badges */
+.bg-success-subtle { background-color: var(--emerald-bg) !important; color: var(--emerald) !important; }
+.bg-warning-subtle { background-color: var(--gold-bg) !important; color: #fbbf24 !important; }
+.bg-danger-subtle { background-color: var(--rose-bg) !important; color: var(--rose) !important; }
+.bg-info-subtle { background-color: var(--cyan-bg) !important; color: var(--primary-cyan) !important; }
+.bg-primary-subtle { background-color: rgba(14, 165, 233, 0.15) !important; color: #38bdf8 !important; }
+.bg-secondary-subtle { background-color: rgba(148, 163, 184, 0.12) !important; color: #94a3b8 !important; }
+
+/* ======================================================
+   Modals (Sleek Dark Dialogs)
+   ====================================================== */
+.modal {
+    z-index: 1060 !important;
+}
+
+.modal-backdrop {
+    z-index: 1050 !important;
+    background-color: rgba(3, 7, 18, 0.75) !important;
+    backdrop-filter: blur(6px);
+}
+
+.modal-dialog {
+    z-index: 1065 !important;
+    position: relative;
+}
+
+.modal-content {
+    background: var(--bg-card) !important;
+    color: var(--text-body) !important;
+    border: 1px solid var(--border-card) !important;
+    border-radius: 16px !important;
+    box-shadow: var(--shadow-xl) !important;
+}
+
+.modal-header {
+    border-bottom: 1px solid var(--border-card) !important;
+    padding: 1.25rem 1.5rem;
+}
+
+.modal-title {
+    color: var(--text-heading) !important;
+    font-weight: 600;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-footer {
+    border-top: 1px solid var(--border-card) !important;
+    padding: 1rem 1.5rem;
+}
+
+/* Ensure modal close buttons are visible in dark theme */
+.modal .btn-close, .alert .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%) !important;
+    opacity: 0.7;
+}
+
+.modal .btn-close:hover, .alert .btn-close:hover {
+    opacity: 1;
+}
+
+/* ======================================================
+   Driver Cards (Interactive Assignment Cards)
+   ====================================================== */
+.driver-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-card);
+    border-radius: 12px;
+    padding: 1rem;
+    transition: all 0.2s ease;
+}
+
+.driver-card:hover {
+    border-color: var(--primary-cyan);
+    box-shadow: var(--glow-cyan);
+    transform: translateY(-2px);
+}
+
+/* ======================================================
+   Leaflet Map Styling
+   ====================================================== */
+#mapContainer {
+    height: 380px;
+    width: 100%;
+    border-radius: 14px;
+    border: 1px solid var(--border-card);
+    box-shadow: var(--shadow-sm);
+    z-index: 1;
+}
+
+/* Make Leaflet popups dark themed */
+.leaflet-popup-content-wrapper {
+    background: var(--bg-card) !important;
+    color: var(--text-heading) !important;
+    border: 1px solid var(--border-card) !important;
+    border-radius: 10px !important;
+    box-shadow: var(--shadow-md) !important;
+}
+
+.leaflet-popup-tip {
+    background: var(--bg-card) !important;
+}
+
+/* ======================================================
+   Rating Stars
+   ====================================================== */
+.rating-stars {
+    color: var(--gold);
+    font-size: 1.2rem;
+    filter: drop-shadow(0 0 3px rgba(245, 158, 11, 0.4));
+}
+
+/* ======================================================
+   Progress Stepper (Live Ride Tracker)
+   ====================================================== */
+.stepper-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+}
+
+.stepper-item .step-counter {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--bg-surface);
+    border: 2px solid var(--border-input);
+    color: var(--text-muted);
+    font-weight: bold;
+    margin-bottom: 6px;
+    box-shadow: var(--shadow-sm);
+}
+
+.stepper-item.completed .step-counter {
+    background: var(--emerald-bg);
+    border-color: var(--emerald);
+    color: var(--emerald);
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+}
+
+.stepper-item::after {
+    position: absolute;
+    content: "";
+    border-bottom: 2px solid var(--border-card);
+    width: 100%;
+    top: 20px;
+    left: 50%;
+    z-index: 2;
+}
+
+.stepper-item:last-child::after {
+    content: none;
+}
+
+.stepper-item.completed::after {
+    border-bottom: 2px solid var(--emerald);
+}
+
+/* ======================================================
+   Auth Cards & Containers
+   ====================================================== */
+.auth-container {
+    max-width: 480px;
+    width: 100%;
+    margin: 3rem auto;
+}
+
+/* Alerts */
+.alert {
+    border-radius: 12px;
+    font-size: 0.9rem;
+    border: 1px solid transparent;
+}
+
+.alert-danger {
+    background-color: var(--rose-bg) !important;
+    border-color: var(--rose-border) !important;
+    color: #fca5a5 !important;
+}
+
+.alert-success {
+    background-color: var(--emerald-bg) !important;
+    border-color: var(--emerald-border) !important;
+    color: #6ee7b7 !important;
+}
+
+.alert-warning {
+    background-color: var(--gold-bg) !important;
+    border-color: var(--gold-border) !important;
+    color: #fde68a !important;
+}
+
+.alert-info {
+    background-color: var(--cyan-bg) !important;
+    border-color: var(--cyan-border) !important;
+    color: #7dd3fc !important;
+}
+
+.alert-secondary {
+    background-color: rgba(148, 163, 184, 0.12) !important;
+    border-color: rgba(148, 163, 184, 0.25) !important;
+    color: #cbd5e1 !important;
+}
+
+/* Dropdown menus */
+.dropdown-menu {
+    background-color: var(--bg-card) !important;
+    border: 1px solid var(--border-card) !important;
+    box-shadow: var(--shadow-lg) !important;
+    border-radius: 10px;
+}
+
+.dropdown-item {
+    color: var(--text-body) !important;
+    transition: background 0.15s ease;
+}
+
+.dropdown-item:hover {
+    background-color: var(--bg-card-hover) !important;
+    color: var(--text-heading) !important;
+}
+
+.dropdown-divider {
+    border-color: var(--border-card) !important;
+}
+
+/* Custom scrollbars for dark elegance */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-page);
+}
+
+::-webkit-scrollbar-thumb {
+    background: #1e293b;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #334155;
+}
