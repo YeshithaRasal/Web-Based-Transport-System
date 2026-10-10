@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Passenger Registration - Swift Go Lanka</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="d-flex flex-column min-vh-100 justify-content-center align-items-center py-4">
+
+<div class="container">
+    <div class="auth-container" style="max-width: 520px;">
+        <div class="glass-card p-4 p-md-5">
+            <div class="text-center mb-4">
+                <div class="d-inline-flex align-items-center justify-content-center p-3 rounded-circle mb-3" style="background: rgba(6, 182, 212, 0.12); border: 1px solid rgba(6, 182, 212, 0.35); box-shadow: 0 0 20px rgba(6, 182, 212, 0.2);">
+                    <i class="bi bi-person-fill-add fs-1" style="color: var(--primary-cyan);"></i>
+                </div>
+                <h3 class="fw-bold mb-1 text-white">Passenger Sign Up</h3>
+                <p class="text-muted small">Create your passenger account to book rides instantly across Sri Lanka</p>
+            </div>
+
+            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${errorMessage}">Error</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <form th:action="@{/register/passenger}" th:object="${passengerDTO}" method="post">
+                <div class="mb-3">
+                    <label class="form-label"><i class="bi bi-person me-1 text-muted"></i> Full Name</label>
+                    <input type="text" th:field="*{fullName}" class="form-control" placeholder="e.g. Kamal Perera" required>
+                    <div class="text-danger small mt-1" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label"><i class="bi bi-envelope me-1 text-muted"></i> Email Address</label>
+                    <input type="email" th:field="*{email}" class="form-control" placeholder="name@example.com" required>
+                    <div class="text-danger small mt-1" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label"><i class="bi bi-telephone me-1 text-muted"></i> Phone Number</label>
+                    <input type="text" th:field="*{phone}" class="form-control" placeholder="+94 77 123 4567" required>
+                    <div class="text-danger small mt-1" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label"><i class="bi bi-lock me-1 text-muted"></i> Password</label>
+                        <input type="password" th:field="*{password}" class="form-control" placeholder="••••••••" required>
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label"><i class="bi bi-shield-check me-1 text-muted"></i> Confirm</label>
+                        <input type="password" th:field="*{confirmPassword}" class="form-control" placeholder="••••••••" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary-swift w-100 py-2 mt-2 mb-3">
+                    <i class="bi bi-check-circle me-2"></i> Register Account
+                </button>
+            </form>
+
+            <div class="text-center mt-3 border-top border-secondary pt-3">
+                <p class="text-muted small mb-0">Already have an account? <a th:href="@{/login}" class="fw-bold text-decoration-none" style="color: var(--primary-cyan);">Log In</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>
