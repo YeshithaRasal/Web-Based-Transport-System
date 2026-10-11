@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Administrator Workspace - Swift Go Lanka</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<!-- Professional Navbar -->
+<nav class="navbar navbar-expand-lg modern-nav sticky-top py-2 px-3">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold d-flex align-items-center" href="#">
+            <i class="bi bi-shield-lock-fill fs-3 me-2" style="color: var(--primary-cyan);"></i>
+            <span class="text-white">Swift Go Lanka</span>
+            <span class="role-badge role-badge-admin ms-2">SYSTEM ADMINISTRATOR</span>
+        </a>
+        <div class="d-flex align-items-center gap-2">
+            <a th:href="@{/profile}" class="btn btn-sm btn-secondary-swift"><i class="bi bi-person-gear me-1"></i> Profile</a>
+            <a th:href="@{/logout}" class="btn btn-sm btn-outline-danger"><i class="bi bi-box-arrow-right me-1"></i> Logout</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid my-4 px-md-4">
+    <!-- Flash Alerts -->
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${errorMessage}">Error</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i> <span th:text="${successMessage}">Success</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Metric Stat Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="glass-card p-3 d-flex align-items-center gap-3">
+                <div class="stat-icon-wrapper" style="background: var(--emerald-bg); color: var(--emerald);">
+                    <i class="bi bi-cash-coin"></i>
+                </div>
+                <div>
+                    <small class="text-muted d-block fw-semibold">Gross Revenue</small>
+                    <h4 class="fw-bold text-success mb-0 font-monospace" th:text="'Rs. ' + ${#numbers.formatDecimal(totalRevenue, 1, 2)}">Rs. 0.00</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="glass-card p-3 d-flex align-items-center gap-3">
+                <div class="stat-icon-wrapper" style="background: var(--cyan-bg); color: var(--primary-cyan);">
+                    <i class="bi bi-piggy-bank"></i>
+                </div>
+                <div>
+                    <small class="text-muted d-block fw-semibold">Platform Net Fee (15%)</small>
+                    <h4 class="fw-bold text-info mb-0 font-monospace" th:text="'Rs. ' + ${#numbers.formatDecimal(platformFees, 1, 2)}">Rs. 0.00</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="glass-card p-3 d-flex align-items-center gap-3">
+                <div class="stat-icon-wrapper" style="background: rgba(99, 102, 241, 0.15); color: #818cf8;">
+                    <i class="bi bi-people"></i>
+                </div>
+                <div>
+                    <small class="text-muted d-block fw-semibold">Active System Users</small>
+                    <h4 class="fw-bold text-white mb-0" th:text="${users.size()}">0</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="glass-card p-3 d-flex align-items-center gap-3">
+                <div class="stat-icon-wrapper" style="background: var(--gold-bg); color: var(--gold);">
+                    <i class="bi bi-car-front"></i>
+                </div>
+                <div>
+                    <small class="text-muted d-block fw-semibold">Registered Drivers</small>
+                    <h4 class="fw-bold text-white mb-0" th:text="${drivers.size()}">0</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs (Segmented Dark Pills) -->
+    <ul class="nav nav-pills p-2 mb-4 d-flex flex-wrap gap-2" id="adminTabs" role="tablist">
+        <li class="nav-item">
+            <button class="nav-link active fw-semibold" id="users-tab" data-bs-toggle="tab" data-bs-target="#users-pane"><i class="bi bi-people-fill me-1"></i> User Management</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link fw-semibold" id="drivers-tab" data-bs-toggle="tab" data-bs-target="#drivers-pane"><i class="bi bi-shield-check me-1"></i> Driver Verification</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link fw-semibold" id="bookings-tab" data-bs-toggle="tab" data-bs-target="#bookings-pane"><i class="bi bi-journal-bookmark-fill me-1"></i> Ride Bookings</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link fw-semibold" id="assignments-tab" data-bs-toggle="tab" data-bs-target="#assignments-pane"><i class="bi bi-send-check-fill me-1"></i> Driver Assignments</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link fw-semibold" id="trips-tab" data-bs-toggle="tab" data-bs-target="#trips-pane"><i class="bi bi-car-front-fill me-1"></i> Trip Management</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link fw-semibold" id="finance-tab" data-bs-toggle="tab" data-bs-target="#finance-pane"><i class="bi bi-credit-card-fill me-1"></i> Payments & Driver Income</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link fw-semibold" id="support-tab" data-bs-toggle="tab" data-bs-target="#support-pane"><i class="bi bi-chat-left-dots-fill me-1"></i> Feedback & Complaints</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link fw-semibold" id="reports-tab" data-bs-toggle="tab" data-bs-target="#reports-pane"><i class="bi bi-file-earmark-bar-graph me-1"></i> Reports Engine</button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="adminTabsContent">
+
+        <!-- TAB 1: USER MANAGEMENT -->
+        <div class="tab-pane fade show active" id="users-pane">
+            <div class="row g-4">
+                <div class="col-lg-8">
+                    <div class="glass-card p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="fw-bold mb-0 text-white"><i class="bi bi-people me-2" style="color: var(--primary-cyan);"></i>System User Registry</h4>
+                        </div>
+
+                        <!-- Search Filter -->
+                        <form th:action="@{/admin/dashboard}" method="get" class="row g-2 mb-3">
+                            <div class="col-md-6">
+                                <input type="text" name="query" th:value="${query}" class="form-control form-control-sm" placeholder="Search by name, email, phone...">
+                            </div>
+                            <div class="col-md-4">
+                                <select name="roleFilter" class="form-select form-select-sm">
+                                    <option value="">All Roles</option>
+                                    <option th:each="r : ${roles}" th:value="${r}" th:text="${r}" th:selected="${r == roleFilter}"></option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-sm btn-primary-swift w-100"><i class="bi bi-search"></i> Search</button>
+                            </div>
+                        </form>
+
+                        <div class="table-responsive">
+                            <table class="table align-middle">
+                                <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="u : ${users}">
+                                    <td class="font-monospace text-muted" th:text="'#' + ${u.id}">#1</td>
+                                    <td class="fw-semibold text-white" th:text="${u.fullName}">Name</td>
+                                    <td class="small text-muted" th:text="${u.email}">Email</td>
+                                    <td><span class="badge bg-secondary" th:text="${u.role}">PASSENGER</span></td>
+                                    <td>
+                                                <span class="badge"
+                                                      th:classappend="${u.accountStatus.name() == 'ACTIVE'} ? 'bg-success' : 'bg-danger'"
+                                                      th:text="${u.accountStatus}">ACTIVE</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-1">
+                                            <form th:action="@{'/admin/users/toggle-status/' + ${u.id}}" method="post">
+                                                <button type="submit" class="btn btn-xs btn-outline-warning"
+                                                        th:text="${u.accountStatus.name() == 'ACTIVE'} ? 'Suspend' : 'Activate'">Toggle</button>
+                                            </form>
+                                            <form th:action="@{'/admin/users/delete/' + ${u.id}}" method="post">
+                                                <button type="submit" class="btn btn-xs btn-outline-danger" onclick="return confirm('Soft-delete this user account?')">Delete</button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Create Staff Form -->
+                <div class="col-lg-4">
+                    <div class="glass-card p-4">
+                        <h5 class="fw-bold mb-3 text-white"><i class="bi bi-person-plus-fill me-2" style="color: var(--primary-cyan);"></i>Create Staff Account</h5>
+                        <form th:action="@{/admin/users/create-staff}" th:object="${staffDTO}" method="post">
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">Full Name</label>
+                                <input type="text" th:field="*{fullName}" class="form-control form-control-sm" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">Email Address</label>
+                                <input type="email" th:field="*{email}" class="form-control form-control-sm" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">Phone</label>
+                                <input type="text" th:field="*{phone}" class="form-control form-control-sm" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">Role Assignment</label>
+                                <select th:field="*{role}" class="form-select form-select-sm" required>
+                                    <option value="ADMIN">ADMIN</option>
+                                    <option value="OPERATIONS_MANAGER">OPERATIONS_MANAGER</option>
+                                    <option value="CUSTOMER_SUPPORT">CUSTOMER_SUPPORT</option>
+                                    <option value="FINANCE_OFFICER">FINANCE_OFFICER</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">Initial Password</label>
+                                <input type="password" th:field="*{password}" class="form-control form-control-sm" required>
+                            </div>
+                            <button type="submit" class="btn btn-sm btn-primary-swift w-100 py-2">Create Staff User</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: DRIVER VERIFICATION -->
+        <div class="tab-pane fade" id="drivers-pane">
+            <div class="glass-card p-4">
+                <h4 class="fw-bold mb-3 text-white"><i class="bi bi-card-heading text-warning me-2"></i>Driver Profile & Licence Approvals</h4>
+
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                        <tr>
+                            <th>Driver Name</th>
+                            <th>Licence No.</th>
+                            <th>Vehicle No.</th>
+                            <th>Vehicle Type</th>
+                            <th>Model & Colour</th>
+                            <th>Verification</th>
+                            <th>Availability</th>
+                            <th>Rating</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="d : ${drivers}">
+                            <td class="fw-semibold text-white" th:text="${d.user.fullName}">Driver</td>
+                            <td class="font-monospace text-primary" th:text="${d.licenceNumber}">DL-1234</td>
+                            <td class="font-monospace fw-bold text-white" th:text="${d.vehicleNumber}">CAB-1234</td>
+                            <td><span class="badge bg-secondary" th:text="${d.vehicleType}">CAR</span></td>
+                            <td class="text-muted small" th:text="${d.vehicleModel} + ' (' + ${d.vehicleColour} + ')'">Model</td>
+                            <td>
+                                        <span class="badge"
+                                              th:classappend="${d.verificationStatus.name() == 'VERIFIED'} ? 'bg-success' : 'bg-warning'"
+                                              th:text="${d.verificationStatus}">PENDING</span>
+                            </td>
+                            <td><span class="badge bg-info" th:text="${d.availabilityStatus}">AVAILABLE</span></td>
+                            <td class="text-warning fw-bold" th:text="${d.ratingAvg} + ' ★'">5.0 ★</td>
+                            <td>
+                                <div class="d-flex gap-1" th:if="${d.verificationStatus.name() != 'VERIFIED'}">
+                                    <form th:action="@{'/admin/drivers/verify/' + ${d.id}}" method="post">
+                                        <input type="hidden" name="approve" value="true">
+                                        <button type="submit" class="btn btn-xs btn-success"><i class="bi bi-check-lg"></i> Approve</button>
+                                    </form>
+                                    <form th:action="@{'/admin/drivers/verify/' + ${d.id}}" method="post">
+                                        <input type="hidden" name="approve" value="false">
+                                        <button type="submit" class="btn btn-xs btn-danger"><i class="bi bi-x-lg"></i> Reject</button>
+                                    </form>
+                                </div>
+                                <span th:if="${d.verificationStatus.name() == 'VERIFIED'}" class="badge bg-success"><i class="bi bi-shield-check"></i> Approved</span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: RIDE BOOKINGS -->
+        <div class="tab-pane fade" id="bookings-pane">
+            <div class="glass-card p-4">
+                <h4 class="fw-bold mb-3 text-white"><i class="bi bi-journal-bookmark me-2" style="color: var(--primary-cyan);"></i>Ride Bookings Registry</h4>
+
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                        <tr>
+                            <th>Booking #</th>
+                            <th>Passenger</th>
+                            <th>Pickup ➔ Drop</th>
+                            <th>Vehicle</th>
+                            <th>Distance</th>
+                            <th>Est. Fare</th>
+                            <th>Status</th>
+                            <th>Created At</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="b : ${bookings}">
+                            <td class="font-monospace text-primary fw-bold" th:text="'#' + ${b.id}">#1</td>
+                            <td class="fw-semibold text-white" th:text="${b.passenger.fullName}">Passenger</td>
+                            <td class="small" th:text="${b.pickupLocation} + ' ➔ ' + ${b.destinationLocation}">Route</td>
+                            <td><span class="badge bg-secondary" th:text="${b.vehicleType}">CAR</span></td>
+                            <td class="text-muted small" th:text="${b.estimatedDistanceKm} + ' km'">3.5 km</td>
+                            <td class="text-success font-monospace fw-bold" th:text="'Rs. ' + ${b.estimatedFare}">Rs. 500</td>
+                            <td>
+                                        <span class="badge"
+                                              th:classappend="${b.bookingStatus.name() == 'COMPLETED'} ? 'bg-success' : (${b.bookingStatus.name() == 'CANCELLED'} ? 'bg-danger' : 'bg-primary')"
+                                              th:text="${b.bookingStatus}">REQUESTED</span>
+                            </td>
+                            <td class="small text-muted" th:text="${#temporals.format(b.createdAt, 'dd-MMM HH:mm')}">Time</td>
+                            <td>
+                                <form th:if="${b.bookingStatus.name() != 'COMPLETED' and b.bookingStatus.name() != 'CANCELLED'}"
+                                      th:action="@{'/admin/bookings/cancel/' + ${b.id}}" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-xs btn-outline-danger" onclick="return confirm('Cancel this ride booking as administrator?')">
+                                        <i class="bi bi-x-circle"></i> Cancel
+                                    </button>
+                                </form>
+                                <span th:if="${b.bookingStatus.name() == 'COMPLETED'}" class="text-success small fw-semibold"><i class="bi bi-check2"></i> Finished</span>
+                                <span th:if="${b.bookingStatus.name() == 'CANCELLED'}" class="text-muted small">Cancelled</span>
+                            </td>
+                        </tr>
+                        <tr th:if="${bookings == null or bookings.isEmpty()}">
+                            <td colspan="9" class="text-center text-muted py-4">No booking records found.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: DRIVER ASSIGNMENTS -->
+        <div class="tab-pane fade" id="assignments-pane">
+            <div class="glass-card p-4">
+                <h4 class="fw-bold mb-3 text-white"><i class="bi bi-send-check me-2" style="color: var(--primary-cyan);"></i>Driver Assignments Monitor</h4>
+
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                        <tr>
+                            <th>Assignment #</th>
+                            <th>Booking #</th>
+                            <th>Passenger</th>
+                            <th>Driver Name</th>
+                            <th>Vehicle Reg</th>
+                            <th>Route</th>
+                            <th>Status</th>
+                            <th>Requested At</th>
+                            <th>Responded At</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="a : ${assignments}">
+                            <td class="font-monospace text-primary fw-bold" th:text="'#' + ${a.id}">#1</td>
+                            <td class="font-monospace text-muted" th:text="'#' + ${a.booking.id}">#1</td>
+                            <td class="text-white" th:text="${a.booking != null and a.booking.passenger != null ? a.booking.passenger.fullName : 'Passenger'}">Passenger</td>
+                            <td class="fw-semibold text-white" th:text="${a.driver != null and a.driver.user != null ? a.driver.user.fullName : 'Driver'}">Driver</td>
+                            <td class="font-monospace text-warning fw-semibold" th:text="${a.driver != null and a.driver.vehicleNumber != null ? a.driver.vehicleNumber : 'N/A'}">CAB-1234</td>
+                            <td class="small text-muted" th:text="${a.booking != null ? a.booking.pickupLocation + ' ➔ ' + a.booking.destinationLocation : 'N/A'}">Route</td>
+                            <td>
+                                        <span class="badge"
+                                              th:classappend="${a.assignmentStatus.name() == 'ACCEPTED'} ? 'bg-success' : (${a.assignmentStatus.name() == 'PENDING'} ? 'bg-warning' : (${a.assignmentStatus.name() == 'REJECTED'} ? 'bg-danger' : 'bg-secondary'))"
+                                              th:text="${a.assignmentStatus}">PENDING</span>
+                            </td>
+                            <td class="small text-muted">
+                                <span class="font-monospace" th:text="${a.assignedAt != null ? #temporals.format(a.assignedAt, 'yyyy-MM-dd HH:mm') : (a.booking != null and a.booking.createdAt != null ? #temporals.format(a.booking.createdAt, 'yyyy-MM-dd HH:mm') : 'Recently')}">Date</span>
+                            </td>
+                            <td class="small">
+                                <span th:if="${a.respondedAt != null}" class="font-monospace text-white" th:text="${#temporals.format(a.respondedAt, 'yyyy-MM-dd HH:mm')}">Date</span>
+                                <span th:if="${a.respondedAt == null and a.assignmentStatus.name() == 'ACCEPTED'}" class="font-monospace text-success fw-semibold" th:text="${a.assignedAt != null ? #temporals.format(a.assignedAt, 'yyyy-MM-dd HH:mm') : 'Dispatched'}">Accepted</span>
+                                <span th:if="${a.respondedAt == null and a.assignmentStatus.name() == 'PENDING'}" class="badge bg-warning"><i class="bi bi-hourglass-split me-1"></i>Waiting Driver</span>
+                                <span th:if="${a.respondedAt == null and a.assignmentStatus.name() == 'CANCELLED'}" class="badge bg-secondary">Cancelled</span>
+                                <span th:if="${a.respondedAt == null and a.assignmentStatus.name() == 'REJECTED'}" class="badge bg-danger">Declined</span>
+                            </td>
+                            <td>
+                                <form th:if="${a.assignmentStatus.name() == 'PENDING'}"
+                                      th:action="@{'/admin/assignments/cancel/' + ${a.id}}" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-xs btn-outline-danger" onclick="return confirm('Cancel this pending assignment?')">
+                                        <i class="bi bi-x-circle me-1"></i> Cancel
+                                    </button>
+                                </form>
+                                <span th:if="${a.assignmentStatus.name() == 'ACCEPTED'}" class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Trip Dispatched</span>
+                                <span th:if="${a.assignmentStatus.name() == 'REJECTED'}" class="badge bg-danger"><i class="bi bi-x-circle me-1"></i>Declined</span>
+                                <span th:if="${a.assignmentStatus.name() == 'CANCELLED'}" class="badge bg-secondary"><i class="bi bi-dash-circle me-1"></i>Superseded</span>
+                            </td>
+                        </tr>
+                        <tr th:if="${assignments == null or assignments.isEmpty()}">
+                            <td colspan="10" class="text-center text-muted py-4">No driver assignment records found.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: DEDICATED TRIP MANAGEMENT (CRUD) -->
+        <div class="tab-pane fade" id="trips-pane">
+            <div class="glass-card p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="fw-bold mb-0 text-white"><i class="bi bi-car-front-fill me-2" style="color: var(--primary-cyan);"></i>Trip Management Console</h4>
+                    <span class="badge bg-secondary" th:text="${trips != null ? trips.size() : 0} + ' Total Trips'">0</span>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                        <tr>
+                            <th>Trip #</th>
+                            <th>Booking</th>
+                            <th>Passenger</th>
+                            <th>Driver</th>
+                            <th>Route</th>
+                            <th>Distance</th>
+                            <th>Fare</th>
+                            <th>Status</th>
+                            <th>Start At</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="t : ${trips}">
+                            <td class="font-monospace text-primary fw-bold" th:text="'#' + ${t.id}">#1</td>
+                            <td class="font-monospace text-muted" th:text="'#' + ${t.booking.id}">#1</td>
+                            <td class="fw-semibold text-white" th:text="${t.passenger.fullName}">Passenger</td>
+                            <td class="fw-semibold text-white" th:text="${t.driver.user.fullName}">Driver</td>
+                            <td class="small" th:text="${t.pickupLocation} + ' ➔ ' + ${t.destinationLocation}">Route</td>
+                            <td class="text-muted small" th:text="${t.distanceKm} + ' km'">5.0 km</td>
+                            <td class="text-success font-monospace fw-bold" th:text="'Rs. ' + ${t.finalFare}">Rs. 500</td>
+                            <td>
+                                        <span class="badge"
+                                              th:classappend="${t.tripStatus.name() == 'COMPLETED'} ? 'bg-success' : (${t.tripStatus.name() == 'CANCELLED'} ? 'bg-danger' : 'bg-primary')"
+                                              th:text="${t.tripStatus}">IN_PROGRESS</span>
+                            </td>
+                            <td class="small text-muted">
+                                <span class="font-monospace" th:text="${t.startTime != null ? #temporals.format(t.startTime, 'yyyy-MM-dd HH:mm') : (t.booking != null and t.booking.createdAt != null ? #temporals.format(t.booking.createdAt, 'yyyy-MM-dd HH:mm') : 'Just now')}">2026-09-18 01:39</span>
+                            </td>
+                            <td>
+                                <div class="d-flex gap-1">
+                                    <!-- Status Change Dropdown Modal / Form if active -->
+                                    <div th:if="${t.tripStatus.name() != 'COMPLETED' and t.tripStatus.name() != 'CANCELLED'}" class="dropdown">
+                                        <button class="btn btn-xs btn-outline-info dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                            Update Status
+                                        </button>
+                                        <ul class="dropdown-menu shadow">
+                                            <li>
+                                                <form th:action="@{'/admin/trips/update-status/' + ${t.id}}" method="post">
+                                                    <input type="hidden" name="status" value="PASSENGER_PICKED_UP">
+                                                    <button type="submit" class="dropdown-item small">Mark Picked Up</button>
+                                                </form>
+                                            </li>
+                                            <li>
+                                                <form th:action="@{'/admin/trips/update-status/' + ${t.id}}" method="post">
+                                                    <input type="hidden" name="status" value="IN_PROGRESS">
+                                                    <button type="submit" class="dropdown-item small">Mark In Progress</button>
+                                                </form>
+                                            </li>
+                                            <li>
+                                                <form th:action="@{'/admin/trips/update-status/' + ${t.id}}" method="post">
+                                                    <input type="hidden" name="status" value="COMPLETED">
+                                                    <button type="submit" class="dropdown-item small text-success fw-bold">Mark Completed</button>
+                                                </form>
+                                            </li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li>
+                                                <form th:action="@{'/admin/trips/cancel/' + ${t.id}}" method="post">
+                                                    <button type="submit" class="dropdown-item small text-danger" onclick="return confirm('Cancel this trip as admin?')">Cancel Trip</button>
+                                                </form>
+                                            </li>
+                                        </ul>
+                                    </div>
+
+                                    <form th:if="${t.tripStatus.name() != 'COMPLETED' and t.tripStatus.name() != 'CANCELLED'}"
+                                          th:action="@{'/admin/trips/cancel/' + ${t.id}}" method="post" class="d-inline">
+                                        <button type="submit" class="btn btn-xs btn-outline-warning" onclick="return confirm('Cancel this trip?')">
+                                            Cancel
+                                        </button>
+                                    </form>
+
+                                    <span th:if="${t.tripStatus.name() == 'COMPLETED'}" class="badge bg-success py-1 px-2">
+                                                <i class="bi bi-check-circle me-1"></i> Completed
+                                            </span>
+                                    <span th:if="${t.tripStatus.name() == 'CANCELLED'}" class="badge bg-secondary py-1 px-2">
+                                                <i class="bi bi-x-circle me-1"></i> Cancelled
+                                            </span>
+
+                                    <form th:action="@{'/admin/trips/delete/' + ${t.id}}" method="post" class="d-inline">
+                                        <button type="submit" class="btn btn-xs btn-outline-danger" onclick="return confirm('Delete this trip record from database?')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${trips == null or trips.isEmpty()}">
+                            <td colspan="10" class="text-center text-muted py-4">No trips recorded in the system.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 6: PAYMENTS & DRIVER INCOME -->
+        <div class="tab-pane fade" id="finance-pane">
+            <div class="row g-4">
+                <!-- Driver Income Overview Table -->
+                <div class="col-12">
+                    <div class="glass-card p-4">
+                        <h4 class="fw-bold text-white mb-1"><i class="bi bi-person-badge-fill text-success me-2"></i>Driver Total Income Overview</h4>
+                        <p class="text-muted small mb-3">Accurately calculated from confirmed customer payments in MySQL.</p>
+
+                        <div class="table-responsive">
+                            <table class="table align-middle">
+                                <thead>
+                                <tr>
+                                    <th>Driver ID</th>
+                                    <th>Driver Name</th>
+                                    <th>Vehicle Number</th>
+                                    <th>Vehicle Type</th>
+                                    <th>Completed Paid Trips</th>
+                                    <th>Total Income</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="di : ${driverIncomeSummaries}">
+                                    <td class="font-monospace text-primary" th:text="'#' + ${di.driverId}">#1</td>
+                                    <td class="fw-semibold text-white" th:text="${di.driverName}">Driver Name</td>
+                                    <td class="font-monospace text-white fw-bold" th:text="${di.vehicleNumber}">CAB-1234</td>
+                                    <td><span class="badge bg-secondary" th:text="${di.vehicleType}">CAR</span></td>
+                                    <td><span class="badge bg-info" th:text="${di.completedTrips} + ' Trips'">0 Trips</span></td>
+                                    <td class="text-success fw-bold font-monospace fs-6" th:text="'Rs. ' + ${#numbers.formatDecimal(di.totalIncome, 1, 2)}">Rs. 0.00</td>
+                                </tr>
+                                <tr th:if="${driverIncomeSummaries == null or driverIncomeSummaries.isEmpty()}">
+                                    <td colspan="6" class="text-center text-muted py-3">No drivers found.</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Global Payment Receipts Table -->
+                <div class="col-12">
+                    <div class="glass-card p-4">
+                        <h4 class="fw-bold text-white mb-3"><i class="bi bi-receipt-cutoff text-success me-2"></i>Global Payment Receipts</h4>
+
+                        <div class="table-responsive">
+                            <table class="table align-middle">
+                                <thead>
+                                <tr>
+                                    <th>Txn Ref</th>
+                                    <th>Trip #</th>
+                                    <th>Passenger</th>
+                                    <th>Driver</th>
+                                    <th>Amount</th>
+                                    <th>Method</th>
+                                    <th>Card / Account</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Action</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="p : ${payments}">
+                                    <td class="font-monospace text-primary fw-bold" th:text="${p.transactionReference}">TXN-1234</td>
+                                    <td class="font-monospace text-muted" th:text="'#' + ${p.trip.id}">#1</td>
+                                    <td class="fw-semibold text-white" th:text="${p.passenger.fullName}">Passenger</td>
+                                    <td class="text-white" th:text="${p.driver != null ? p.driver.user.fullName : (p.trip.driver != null ? p.trip.driver.user.fullName : 'N/A')}">Driver</td>
+                                    <td class="text-success font-monospace fw-bold" th:text="'Rs. ' + ${p.amount}">Rs. 500</td>
+                                    <td><span class="badge bg-secondary" th:text="${p.paymentMethod}">CREDIT_CARD</span></td>
+                                    <td class="font-monospace text-muted small" th:text="${p.maskedCardNumber != null ? p.maskedCardNumber : (p.cardHolderName != null ? p.cardHolderName : '--')}">•••• 1234</td>
+                                    <td>
+                                                <span class="badge"
+                                                      th:classappend="${p.paymentStatus.name() == 'PAID'} ? 'bg-success' : (${p.paymentStatus.name() == 'VOID'} ? 'bg-danger' : 'bg-warning')"
+                                                      th:text="${p.paymentStatus}">PAID</span>
+                                    </td>
+                                    <td class="small text-muted" th:text="${p.paidAt != null ? #temporals.format(p.paidAt, 'dd-MMM-yyyy HH:mm') : '--'}">Date</td>
+                                    <td>
+                                        <form th:if="${p.paymentStatus.name() == 'PAID'}"
+                                              th:action="@{'/admin/payments/void/' + ${p.id}}" method="post" class="d-inline">
+                                            <button type="submit" class="btn btn-xs btn-outline-warning" onclick="return confirm('Void/Cancel this payment record?')">
+                                                <i class="bi bi-slash-circle"></i> Void
+                                            </button>
+                                        </form>
+                                        <span th:if="${p.paymentStatus.name() != 'PAID'}" class="text-muted small">--</span>
+                                    </td>
+                                </tr>
+                                <tr th:if="${payments == null or payments.isEmpty()}">
+                                    <td colspan="10" class="text-center text-muted py-4">No payment records found.</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customer Refund Requests & Claims Management -->
+                <div class="col-12 mt-4">
+                    <div class="glass-card p-4 border-warning border-opacity-50">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h4 class="fw-bold text-white mb-0"><i class="bi bi-arrow-counterclockwise text-warning me-2"></i>Customer Refund Requests & Claims</h4>
+                            <span class="badge bg-warning fs-6" th:text="${refunds != null ? refunds.size() : 0} + ' Total Claims'">0 Claims</span>
+                        </div>
+                        <p class="text-muted small mb-3">Evaluate passenger refund claims. Review the stated reason against ride circumstances and approve full refunds for fair/justified claims.</p>
+
+                        <div class="table-responsive">
+                            <table class="table align-middle">
+                                <thead>
+                                <tr>
+                                    <th>Claim #</th>
+                                    <th>Date & Time</th>
+                                    <th>Passenger</th>
+                                    <th>Txn Ref & Trip</th>
+                                    <th>Amount</th>
+                                    <th>Customer's Stated Reason</th>
+                                    <th>Status</th>
+                                    <th>Admin Notes / Decision</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="r : ${refunds}">
+                                    <td class="font-monospace text-primary fw-bold" th:text="'#' + ${r.id}">#1</td>
+                                    <td class="small text-muted" th:text="${#temporals.format(r.requestedAt, 'dd-MMM-yyyy HH:mm')}">Date</td>
+                                    <td>
+                                        <strong class="text-white d-block" th:text="${r.passenger.fullName}">Passenger</strong>
+                                        <small class="text-muted font-monospace" th:text="${r.passenger.email}">email@mail.com</small>
+                                    </td>
+                                    <td>
+                                        <span class="font-monospace text-primary d-block fw-semibold" th:text="${r.payment.transactionReference}">TXN-1234</span>
+                                        <small class="text-muted" th:text="'Trip #' + ${r.payment.trip.id}">Trip #1</small>
+                                    </td>
+                                    <td class="text-success font-monospace fw-bold fs-6" th:text="'Rs. ' + ${#numbers.formatDecimal(r.amount, 1, 2)}">Rs. 500.00</td>
+                                    <td style="max-width: 250px;">
+                                        <div class="p-2 rounded small text-white" style="background: var(--bg-surface); border: 1px solid var(--border-card);">
+                                            <i class="bi bi-quote me-1 text-warning"></i><span th:text="${r.reason}">Reason</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                                <span class="badge"
+                                                      th:classappend="${r.refundStatus.name() == 'PROCESSED' or r.refundStatus.name() == 'APPROVED'} ? 'bg-success' : (${r.refundStatus.name() == 'REJECTED'} ? 'bg-danger' : 'bg-warning')"
+                                                      th:text="${r.refundStatus.name() == 'PROCESSED' or r.refundStatus.name() == 'APPROVED'} ? 'APPROVED & REFUNDED' : (${r.refundStatus.name() == 'REJECTED'} ? 'DECLINED' : 'PENDING REVIEW')">PENDING</span>
+                                    </td>
+                                    <td class="small" style="max-width: 220px;">
+                                                <span th:if="${r.remarks != null and !r.remarks.isBlank()}"
+                                                      th:classappend="${r.refundStatus.name() == 'REJECTED'} ? 'text-danger' : 'text-success fw-semibold'"
+                                                      th:text="${r.remarks}">Decision notes</span>
+                                        <span th:if="${r.remarks == null or r.remarks.isBlank()}" class="text-muted">Awaiting decision</span>
+                                    </td>
+                                    <td>
+                                        <button th:if="${r.refundStatus.name() == 'PENDING'}"
+                                                class="btn btn-xs btn-warning text-dark fw-bold"
+                                                type="button"
+                                                data-bs-toggle="modal"
+                                                th:data-bs-target="'#adminRefundModal' + ${r.id}">
+                                            <i class="bi bi-shield-check me-1"></i> Review & Decision
+                                        </button>
+                                        <span th:if="${r.refundStatus.name() != 'PENDING'}" class="badge bg-secondary">Decision Recorded</span>
+                                    </td>
+                                </tr>
+                                <tr th:if="${refunds == null or refunds.isEmpty()}">
+                                    <td colspan="9" class="text-center text-muted py-4">No customer refund claims logged in the system.</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- TAB 7: FEEDBACK & COMPLAINTS -->
+        <div class="tab-pane fade" id="support-pane">
+            <div class="row g-4">
+                <!-- Passenger Ratings & Reviews -->
+                <div class="col-lg-5">
+                    <div class="glass-card p-4">
+                        <h4 class="fw-bold text-white mb-3"><i class="bi bi-star-fill text-warning me-2"></i>Passenger Reviews</h4>
+
+                        <div th:each="fb : ${feedbackList}" class="p-3 mb-2 rounded" style="background: var(--bg-surface); border: 1px solid var(--border-card);">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="rating-stars" th:text="${'★'.repeat(fb.rating)}">★★★★★</span>
+                                <form th:action="@{'/admin/feedback/delete/' + ${fb.id}}" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-xs btn-outline-danger" onclick="return confirm('Delete this review?')">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                            <p class="mb-1 text-white small" th:text="${fb.comment}">Review comment</p>
+                            <small class="text-info d-block fw-semibold" th:text="'Passenger: ' + ${fb.passenger.fullName} + ' • Driver: ' + ${fb.driver.user.fullName}">Info</small>
+                            <small class="text-muted" th:text="${#temporals.format(fb.createdAt, 'dd-MMM-yyyy HH:mm')}">Date</small>
+                        </div>
+                        <div th:if="${feedbackList == null or feedbackList.isEmpty()}" class="text-center text-muted py-3 small">
+                            No feedback submitted yet.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customer Complaints & Tickets Management -->
+                <div class="col-lg-7">
+                    <div class="glass-card p-4">
+                        <h4 class="fw-bold text-white mb-3"><i class="bi bi-ticket-detailed-fill text-danger me-2"></i>Customer Support Complaints</h4>
+
+                        <div class="table-responsive">
+                            <table class="table table-sm align-middle">
+                                <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>User</th>
+                                    <th>Category</th>
+                                    <th>Subject & Description</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="c : ${complaints}">
+                                    <td class="font-monospace text-primary fw-bold" th:text="'#' + ${c.id}">#1</td>
+                                    <td class="fw-semibold text-white" th:text="${c.user.fullName}">User</td>
+                                    <td><span class="badge bg-secondary" th:text="${c.category}">Category</span></td>
+                                    <td>
+                                        <strong class="text-white d-block" th:text="${c.subject}">Subject</strong>
+                                        <small class="text-muted d-block" th:text="${c.description}">Description</small>
+                                        <small th:if="${c.resolutionNotes != null}" class="text-success d-block mt-1">
+                                            <strong>Resolution:</strong> <span th:text="${c.resolutionNotes}">Notes</span>
+                                        </small>
+                                    </td>
+                                    <td>
+                                                <span class="badge"
+                                                      th:classappend="${c.complaintStatus.name() == 'RESOLVED'} ? 'bg-success' : (${c.complaintStatus.name() == 'OPEN'} ? 'bg-danger' : 'bg-warning')"
+                                                      th:text="${c.complaintStatus}">OPEN</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-1">
+                                            <button class="btn btn-xs btn-outline-primary fw-semibold" type="button" data-bs-toggle="modal" th:data-bs-target="'#complaintModal' + ${c.id}">
+                                                <i class="bi bi-pencil-square me-1"></i> Resolve
+                                            </button>
+                                            <form th:action="@{'/admin/complaints/' + ${c.id} + '/delete'}" method="post" class="d-inline">
+                                                <button type="submit" class="btn btn-xs btn-outline-danger" onclick="return confirm('Delete complaint ticket?')">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr th:if="${complaints == null or complaints.isEmpty()}">
+                                    <td colspan="6" class="text-center text-muted py-3">No complaint tickets logged.</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 8: REPORTS ENGINE (DYNAMIC MYSQL DATA) -->
+        <div class="tab-pane fade" id="reports-pane">
+            <div class="row g-4">
+                <!-- Report Generation Form -->
+                <div class="col-lg-4">
+                    <div class="glass-card p-4">
+                        <h5 class="fw-bold text-white mb-3"><i class="bi bi-file-earmark-bar-graph me-2" style="color: var(--primary-cyan);"></i>Generate Real-Time Report</h5>
+                        <form th:action="@{/admin/reports/generate}" th:object="${reportRequestDTO}" method="post">
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">Report Type</label>
+                                <select th:field="*{reportType}" class="form-select form-select-sm" required>
+                                    <option th:each="rt : ${reportTypes}" th:value="${rt}" th:text="${rt.displayName}"></option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">Custom Title (Optional)</label>
+                                <input type="text" th:field="*{title}" class="form-control form-control-sm" placeholder="e.g. Q3 Financial Summary">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">Start Date</label>
+                                <input type="date" th:field="*{startDate}" class="form-control form-control-sm">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">End Date</label>
+                                <input type="date" th:field="*{endDate}" class="form-control form-control-sm">
+                            </div>
+                            <button type="submit" class="btn btn-sm btn-primary-swift w-100 py-2"><i class="bi bi-lightning-charge-fill me-1"></i> Generate Report</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Generated System Reports Archive -->
+                <div class="col-lg-8">
+                    <div class="glass-card p-4">
+                        <h5 class="fw-bold text-white mb-3"><i class="bi bi-folder-symlink-fill me-2" style="color: var(--primary-cyan);"></i>Saved Reports Archive</h5>
+                        <div class="table-responsive">
+                            <table class="table align-middle">
+                                <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Title</th>
+                                    <th>Type</th>
+                                    <th>Generated By</th>
+                                    <th>Date Range</th>
+                                    <th>Action</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="rep : ${reports}">
+                                    <td class="font-monospace text-primary fw-bold" th:text="'#' + ${rep.id}">#1</td>
+                                    <td class="fw-semibold text-white" th:text="${rep.title}">Title</td>
+                                    <td><span class="badge bg-secondary" th:text="${rep.reportType}">TYPE</span></td>
+                                    <td class="text-white" th:text="${rep.generatedBy.fullName}">Admin</td>
+                                    <td class="small text-muted" th:text="${rep.startDate} + ' to ' + ${rep.endDate}">Dates</td>
+                                    <td>
+                                        <a th:href="@{'/admin/reports/view/' + ${rep.id}}" class="btn btn-xs btn-outline-info">
+                                            <i class="bi bi-table me-1"></i> View Data
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr th:if="${reports == null or reports.isEmpty()}">
+                                    <td colspan="6" class="text-center text-muted py-3">No reports generated yet.</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dynamic Report Output Table (When Report is Active) -->
+                <div th:if="${activeReport != null}" class="col-12">
+                    <div class="glass-card p-4 border-primary shadow-sm">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <span class="badge bg-primary text-white me-2" th:text="${activeReport.report.reportType}">REPORT</span>
+                                <h4 class="fw-bold text-white d-inline align-middle" th:text="${activeReport.report.title}">Report Title</h4>
+                            </div>
+                            <span class="text-muted small" th:text="'Period: ' + ${activeReport.report.startDate} + ' to ' + ${activeReport.report.endDate}">Period</span>
+                        </div>
+
+                        <!-- Summary KPI Stat Cards -->
+                        <div th:if="${activeReport.summaryStats != null and !activeReport.summaryStats.isEmpty()}" class="row g-3 mb-4">
+                            <div th:each="stat : ${activeReport.summaryStats}" class="col-md-3">
+                                <div class="p-3 rounded" style="background: var(--bg-surface); border: 1px solid var(--border-card);">
+                                    <small class="text-muted d-block fw-semibold" th:text="${stat.key}">Metric</small>
+                                    <h5 class="fw-bold text-white mb-0 font-monospace" th:text="${stat.value}">0</h5>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Dynamic MySQL Records Table -->
+                        <div class="table-responsive">
+                            <table class="table align-middle">
+                                <thead>
+                                <tr>
+                                    <th th:each="hdr : ${activeReport.headers}" th:text="${hdr}">Header</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="r : ${activeReport.rows}">
+                                    <td th:each="val : ${r}" th:text="${val}">Value</td>
+                                </tr>
+                                <tr th:if="${activeReport.rows == null or activeReport.rows.isEmpty()}">
+                                    <td th:colspan="${activeReport.headers != null ? activeReport.headers.size() : 1}" class="text-center text-muted py-4">
+                                        No records found in database for this date range and criteria.
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- ROOT LEVEL MODALS (Direct children of body to prevent stacking context bugs) -->
+<!-- ========================================================================= -->
+
+<!-- Admin Refund Assessment Modals -->
+<div th:each="r : ${refunds}" th:if="${r.refundStatus.name() == 'PENDING'}">
+    <div class="modal fade" th:id="'adminRefundModal' + ${r.id}" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
+        <div class="modal-dialog modal-dialog-centered" style="z-index: 1065;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold text-white"><i class="bi bi-shield-check text-warning me-2"></i>Evaluate Refund Claim #<span th:text="${r.id}"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form th:action="@{/admin/refunds/process}" method="post">
+                    <input type="hidden" name="refundId" th:value="${r.id}">
+                    <div class="modal-body">
+                        <!-- Summary of Transaction -->
+                        <div class="p-3 mb-3 rounded" style="background: var(--bg-surface); border: 1px solid var(--border-card);">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="text-muted small">Customer:</span>
+                                <span class="fw-bold text-white" th:text="${r.passenger.fullName} + ' (' + ${r.passenger.email} + ')'">Customer</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="text-muted small">Txn Reference:</span>
+                                <span class="font-monospace text-primary fw-semibold" th:text="${r.payment.transactionReference}">TXN-1234</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="text-muted small">Trip # / Route:</span>
+                                <span class="text-white" th:text="'Trip #' + ${r.payment.trip.id} + ' (' + ${r.payment.trip.pickupLocation} + ' → ' + ${r.payment.trip.destinationLocation} + ')'">Route</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top" style="border-color: var(--border-card) !important;">
+                                <span class="fw-bold text-white">Claimed Amount:</span>
+                                <span class="text-success fw-bold font-monospace fs-5" th:text="'Rs. ' + ${#numbers.formatDecimal(r.amount, 1, 2)}">Rs. 500.00</span>
+                            </div>
+                        </div>
+
+                        <!-- Customer Reason Highlight -->
+                        <div class="alert alert-warning p-3 mb-3 border-0">
+                            <strong class="d-block mb-1 text-white fw-bold"><i class="bi bi-chat-quote-fill me-1"></i>Customer's Stated Reason:</strong>
+                            <p class="mb-0 small" style="white-space: pre-wrap;" th:text="${r.reason}">Reason why refund is requested</p>
+                        </div>
+
+                        <!-- Admin Remarks Input -->
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Fair Reason Assessment & Decision Notes <span class="text-danger">*</span></label>
+                            <textarea name="remarks" class="form-control form-control-sm" rows="3" placeholder="Enter reason for decision (e.g. 'Fair reason verified: driver delayed and trip was cancelled. Full refund granted.' or 'Declined: GPS records confirm trip was completed safely.')..." required></textarea>
+                            <small class="text-muted">This note will be communicated to the customer in their notification and dashboard.</small>
+                        </div>
+                    </div>
+                    <div class="modal-footer d-flex justify-content-between">
+                        <button type="button" class="btn btn-sm btn-secondary-swift" data-bs-dismiss="modal">Cancel</button>
+                        <div class="d-flex gap-2">
+                            <button type="submit" name="approve" value="false" class="btn btn-sm btn-outline-danger" onclick="return confirm('Decline this customer refund request?')">
+                                <i class="bi bi-x-circle me-1"></i> Decline Claim
+                            </button>
+                            <button type="submit" name="approve" value="true" class="btn btn-sm btn-success fw-bold" onclick="return confirm('Approve this refund as a fair reason and refund customer?')">
+                                <i class="bi bi-check2-circle me-1"></i> Approve Refund (Fair Reason)
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Admin Complaint Resolution Modals -->
+<div th:each="c : ${complaints}">
+    <div class="modal fade" th:id="'complaintModal' + ${c.id}" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
+        <div class="modal-dialog modal-dialog-centered" style="z-index: 1065;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold text-white"><i class="bi bi-headset me-2" style="color: var(--primary-cyan);"></i>Handle Complaint Ticket #<span th:text="${c.id}"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form th:action="@{'/admin/complaints/' + ${c.id} + '/status'}" method="post">
+                    <div class="modal-body">
+                        <!-- Complainant Information -->
+                        <div class="p-3 mb-3 rounded" style="background: var(--bg-surface); border: 1px solid var(--border-card);">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="text-muted small">Complainant:</span>
+                                <span class="fw-bold text-white" th:text="${c.user.fullName} + ' (' + ${c.user.email} + ')'">User</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="text-muted small">Category:</span>
+                                <span class="badge bg-secondary" th:text="${c.category}">Billing</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1" th:if="${c.trip != null}">
+                                <span class="text-muted small">Related Trip:</span>
+                                <span class="text-primary font-monospace fw-semibold" th:text="'Trip #' + ${c.trip.id} + ' (' + ${c.trip.pickupLocation} + ' → ' + ${c.trip.destinationLocation} + ')'">Trip</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted small">Logged Date:</span>
+                                <span class="text-muted small" th:text="${#temporals.format(c.createdAt, 'dd-MMM-yyyy HH:mm')}">Date</span>
+                            </div>
+                        </div>
+
+                        <!-- Complaint Subject & Body -->
+                        <div class="p-3 mb-3 rounded" style="background: var(--bg-surface); border: 1px solid var(--border-card);">
+                            <strong class="d-block text-white mb-1" th:text="${c.subject}">Subject</strong>
+                            <p class="mb-0 text-muted small" style="white-space: pre-wrap;" th:text="${c.description}">Description text</p>
+                        </div>
+
+                        <!-- Status Selection -->
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Ticket Status <span class="text-danger">*</span></label>
+                            <select name="status" class="form-select form-select-sm" required>
+                                <option value="OPEN" th:selected="${c.complaintStatus.name() == 'OPEN'}">OPEN (Awaiting Attention)</option>
+                                <option value="IN_PROGRESS" th:selected="${c.complaintStatus.name() == 'IN_PROGRESS'}">IN_PROGRESS (Under Investigation)</option>
+                                <option value="RESOLVED" th:selected="${c.complaintStatus.name() == 'RESOLVED'}">RESOLVED (Action Taken & Settled)</option>
+                                <option value="CLOSED" th:selected="${c.complaintStatus.name() == 'CLOSED'}">CLOSED (Ticket Finalized)</option>
+                            </select>
+                        </div>
+
+                        <!-- Resolution Notes -->
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Resolution Notes & Communication to Customer</label>
+                            <textarea name="resolutionNotes" th:text="${c.resolutionNotes}" class="form-control form-control-sm" rows="3" placeholder="Explain the investigation outcome, actions taken with the driver, or resolution provided to the customer..."></textarea>
+                            <small class="text-muted">These notes will be displayed on the customer's portal and sent via notification.</small>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-sm btn-secondary-swift" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-sm btn-primary-swift px-3">
+                            <i class="bi bi-check-circle me-1"></i> Update & Notify Customer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/main.js}"></script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const activeTabFlash = /*[[${activeTab}]]*/ null;
+    if (activeTabFlash) {
+        const tabBtn = document.getElementById(activeTabFlash + '-tab')
+                    || document.querySelector('[data-bs-target="#' + activeTabFlash + '-pane"]')
+                    || (activeTabFlash === 'payments' ? document.getElementById('finance-tab') : null);
+        if (tabBtn) {
+            bootstrap.Tab.getOrCreateInstance(tabBtn).show();
+        }
+    } else if (window.location.hash) {
+        const hashTab = document.querySelector(`button[data-bs-target="${window.location.hash}"]`);
+        if (hashTab) {
+            bootstrap.Tab.getOrCreateInstance(hashTab).show();
+        }
+    }
+    /*]]>*/
+</script>
+</body>
+</html>
