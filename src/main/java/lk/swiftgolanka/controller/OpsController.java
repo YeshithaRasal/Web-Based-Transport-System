@@ -31,7 +31,7 @@ public class OpsController {
     private TripService tripService;
 
     @Autowired
-    private ReportFeedbackService reportFeedbackService;
+    private ReportFeedbackservice reportFeedbackService;
 
     @GetMapping("/dashboard")
     public String opsDashboard(Model model) {

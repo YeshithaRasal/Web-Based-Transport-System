@@ -40,7 +40,7 @@ public class AdminController {
     private PaymentService paymentService;
 
     @Autowired
-    private ReportFeedbackService reportFeedbackService;
+    private ReportFeedbackservice reportFeedbackService;
 
     @Autowired
     private DriverAssignmentService assignmentService;

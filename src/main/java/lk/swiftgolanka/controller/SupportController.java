@@ -3,7 +3,6 @@ package lk.swiftgolanka.controller;
 import lk.swiftgolanka.entity.Complaint;
 import lk.swiftgolanka.entity.Feedback;
 import lk.swiftgolanka.enums.ComplaintStatus;
-import lk.swiftgolanka.service.ReportFeedbackService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,7 +16,7 @@ import java.util.List;
 public class SupportController {
 
     @Autowired
-    private ReportFeedbackService reportFeedbackService;
+    private ReportFeedbackservice reportFeedbackService;
 
     @GetMapping("/dashboard")
     public String supportDashboard(Model model) {
