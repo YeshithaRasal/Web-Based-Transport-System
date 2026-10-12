@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Driver Registration - Swift Go Lanka</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="d-flex flex-column min-vh-100 justify-content-center align-items-center py-4">
+
+<div class="container">
+    <div class="auth-container" style="max-width: 650px;">
+        <div class="glass-card p-4 p-md-5">
+            <div class="text-center mb-4">
+                <div class="d-inline-flex align-items-center justify-content-center p-3 rounded-circle mb-3" style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);">
+                    <i class="bi bi-car-front-fill fs-1" style="color: var(--emerald);"></i>
+                </div>
+                <h3 class="fw-bold mb-1 text-white">Driver Partner Registration</h3>
+                <p class="text-muted small">Join Swift Go Lanka as a verified driver partner</p>
+            </div>
+
+            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${errorMessage}">Error</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <form th:action="@{/register/driver}" th:object="${driverDTO}" method="post">
+                <h6 class="fw-bold mb-3 border-bottom pb-2" style="color: var(--primary-cyan); border-color: var(--border-card) !important;"><i class="bi bi-person-circle me-1"></i> Personal Details</h6>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" th:field="*{fullName}" class="form-control" placeholder="e.g. Sunil Shantha" required>
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" th:field="*{email}" class="form-control" placeholder="driver@example.com" required>
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Phone Number</label>
+                        <input type="text" th:field="*{phone}" class="form-control" placeholder="+94 76 123 4567" required>
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Licence Number</label>
+                        <input type="text" th:field="*{licenceNumber}" class="form-control" placeholder="e.g. DL-98765432" required>
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('licenceNumber')}" th:errors="*{licenceNumber}"></div>
+                    </div>
+                </div>
+
+                <h6 class="fw-bold mb-3 border-bottom pb-2 mt-2" style="color: var(--primary-cyan); border-color: var(--border-card) !important;"><i class="bi bi-truck me-1"></i> Vehicle Details</h6>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Vehicle Registration No.</label>
+                        <input type="text" th:field="*{vehicleNumber}" class="form-control" placeholder="e.g. CAB-1234 / TUK-5678" required>
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('vehicleNumber')}" th:errors="*{vehicleNumber}"></div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Vehicle Type</label>
+                        <select th:field="*{vehicleType}" class="form-select" required>
+                            <option value="" disabled selected>Select Vehicle Category</option>
+                            <option th:each="vType : ${vehicleTypes}" th:value="${vType}" th:text="${vType.displayName}"></option>
+                        </select>
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('vehicleType')}" th:errors="*{vehicleType}"></div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Vehicle Model</label>
+                        <input type="text" th:field="*{vehicleModel}" class="form-control" placeholder="e.g. Toyota Prius / Bajaj RE">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Vehicle Colour</label>
+                        <input type="text" th:field="*{vehicleColour}" class="form-control" placeholder="e.g. Silver / Red">
+                    </div>
+                </div>
+
+                <h6 class="fw-bold mb-3 border-bottom pb-2 mt-2" style="color: var(--primary-cyan); border-color: var(--border-card) !important;"><i class="bi bi-shield-lock me-1"></i> Security</h6>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" th:field="*{password}" class="form-control" placeholder="••••••••" required>
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Confirm Password</label>
+                        <input type="password" th:field="*{confirmPassword}" class="form-control" placeholder="••••••••" required>
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary-swift w-100 py-2 mt-3 mb-3">
+                    <i class="bi bi-send-check me-2"></i> Submit Driver Profile
+                </button>
+            </form>
+
+            <div class="text-center mt-2 border-top border-secondary pt-3">
+                <p class="text-muted small mb-0">Already registered? <a th:href="@{/login}" class="fw-bold text-decoration-none" style="color: var(--primary-cyan);">Log In</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>
